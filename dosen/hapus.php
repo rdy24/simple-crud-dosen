@@ -1,5 +1,5 @@
 <?php
-include '../config.php';
+include '../koneksi.php';
         if (isset($_GET['id'])) {$id = $_GET['id'];} else {$id=0;}  
         $id= trim(preg_replace('/[^0-9]/','',$id)); 
         

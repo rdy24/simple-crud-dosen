@@ -1,79 +1,157 @@
-<?php 
- include '../config.php'; 
-?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Data Dosen</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+  <title>Simple Crud</title>
+
+  <!-- General CSS Files -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+  <!-- CSS Libraries -->
+    <link rel="stylesheet" href="../assets/module/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="../assets/module/datatables.net-select-bs4/css/select.bootstrap4.min.css">
+
+  <!-- Template CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+
+  <!-- jquery -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 </head>
+
 <body>
-<div class="container">
-    <h2 class="text-center mt-4">Data Dosen</h2>
-    <a href="Form_Tambah.php" class="btn btn-primary mb-3">Tambah Data</a>
-    <table class="table table-bordered">
-        <tr class="text-center">
-            <td>No</td>
-            <td>NIP</td>
-            <td>Nama</td>
-            <td>Jenis Kelamin</td>
-            <td>Alamat</td>
-            <td>Lulusan</td>
-            <td>Aksi</td>
+  <div id="app">
+    <div class="main-wrapper">
+      <div class="navbar-bg"></div>
+      <?php include 'include/navbar.php' ?>
+      
+      <?php include 'include/sidebar.php' ?>
 
-        </tr>
-        <?php  
-        $query = "SELECT * FROM tb_dosen";
-        $action = mysqli_query($koneksi,$query);
-        if(mysqli_num_rows($action) > 0)
-        {
-            
-            $no = 1;
-            echo '<tbody>';
-            
-            while ($list = mysqli_fetch_array($action))
-            { 
-                $T1 = $list['nip'];  
-                $T2 = $list['nama'];
-                $T3 = $list['jenis_kelamin'];  
-                $T4 = $list['alamat'];
-                $T5 = $list['lulusan'];
-                $T6 = $list['id'];  
-                
-                
-            echo '<tr class="text-center">
-            <td>'.$no.'</td>
-            <td>'.$T1.'</td>
-            <td>'.$T2.'</td>
-            <td>'.$T3.'</td>
-            <td>'.$T4.'</td>
-            <td>'.$T5.'</td>
-            <td>
-            <a class="btn btn-info" href="Form_Edit.php?id='.$T6.'"> <i class="glyphicon glyphicon-ok"></i> Edit </a> :: 
-            <a class="btn btn-danger remove_fields" href="hapus.php?id='.$T6.'"> <i class="glyphicon glyphicon-trash"></i> Hapus </a>
+      <!-- Main Content -->
+      <div class="main-content">
+        <section class="section">
+          <div class="section-header">
+            <h1>Data Dosen</h1>
+            <div class="section-header-breadcrumb">
+              <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
+              <div class="breadcrumb-item">Data Dosen</div>
+            </div>
+          </div>
 
-            </td></tr>';
-            $no++;
-            }
-            
-        }
-        else
-        {
-            echo '<tr class="text-center"><td colspan="7"><h4>&nbsp;Belum ada data dosen!</h4></td></tr>';
-        }
+          <div class="section-body">
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-body">
+                    <a href="create.php" class="btn btn-primary">Tambah Data</a>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-striped" id="table-1">
+                        <thead>
+                          <tr>
+                            <th class="text-center">
+                              No
+                            </th>
+                            <th>NIP</th>
+                            <th>Nama</th>
+                            <th>Tanggal Lahir</th>
+                            <th>Jenis Kelamin</th>
+                            <th>Alamat</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        <?php 
+                            include '../koneksi.php';
+                            $sql = "SELECT * FROM tb_dosen";
+                            $result = mysqli_query($koneksi, $sql);
+                            $no = 1;
+                            while($data = mysqli_fetch_assoc($result)) {
+                            echo "
+                            <tr>
+                                <td class='text-center'>$no</td>
+                                <td>$data[nip]</td>
+                                <td>$data[nama]</td>
+                                <td>$data[tanggal_lahir]</td>
+                                <td>$data[jenis_kelamin]</td>
+                                <td>$data[alamat]</td>
+                                <td>
+                                  <a href=edit.php?id=$data[id] class='btn btn-warning'><i class='fas fa-pen'></i></a>
+                                  <form action='hapus.php?id=$data[id]' method='POST' class='d-inline'>
+                                      <button class='btn btn-danger btn-delete' data-toggle='tooltip' name='hapus' type='submit'>
+                                      <i class='fas fa-trash' aria-hidden='true'></i></button>
+                                  </form>
+                                </td>
+                            </tr>
+                            ";
+                            $no++;
+                            }
+                        ?>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <footer class="main-footer">
+       <div class="footer-left">
+          Copyright &copy; 2022
+        </div>
+        <div class="footer-right">
+          2.3.0
+        </div>
+      </footer>
+    </div>
+  </div>
 
+  <!-- General JS Scripts -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <script src="../assets/js/stisla.js"></script>
 
-        ?>
-    
-    </table>   
-</div>
-  
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
-  </body>
+  <!-- JS Libraies -->
+  <script src="../assets/module/datatables/media/js/jquery.dataTables.min.js"></script>
+  <script src="../assets/module/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+  <script src="../assets/module/datatables.net-select-bs4/js/select.bootstrap4.min.js"></script>
+  <script src="../assets/module/sweetalert/dist/sweetalert.min.js"></script>
+
+  <!-- Template JS File -->
+  <script src="../assets/js/scripts.js"></script>
+  <script src="../assets/js/custom.js"></script>
+
+  <!-- Page Specific JS File -->
+  <script src="../assets/js/page/modules-datatables.js"></script>
+
+  <script>
+  $(".btn-delete").click(function(e) {
+    var form = $(this).closest("form");
+    var name = $(this).data("name");
+    e.preventDefault();
+    swal({
+      title: 'Yakin ingin menghapus data?',
+      text: 'Data akan terhapus secara permanen',
+      icon: 'warning',
+      buttons: true,
+    })
+    .then((willDelete) => {
+      if (willDelete) {
+        form.submit();
+      } else {
+        swal('Proses Hapus dibatalkan');
+      }
+    });
+  });
+</script>
 </body>
 </html>
